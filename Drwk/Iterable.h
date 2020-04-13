@@ -19,7 +19,7 @@ namespace Drwk {
 
         void operator++();
         void operator+=(const int& n);
-        friend Iterator<T> operator+(Iterator<T> a, const int &n)
+        friend Iterator<T> operator+(Iterator<T> a, const int &n);
 	private:
 		T* m_value;
 	};
