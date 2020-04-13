@@ -4,6 +4,9 @@ namespace Drwk
 {
 
 template <typename T>
+class Iterable;
+
+template <typename T>
 class Iterator
 {
 public:
@@ -11,18 +14,16 @@ public:
 	Iterator(T *value) : m_value(value) {}
 
 	// Methods
-	virtual T &value(void){return *m_value};
+	virtual T &value(void) { return *m_value; }
 	virtual void next() = 0;
 
 	// Operators
-	friend bool operator!=(const Iterator<T> &a, const Iterator<T> &b);
-	friend bool operator==(const Iterator<T> &a, const Iterator<T> &b);
-
 	void operator++();
 	void operator+=(const int &n);
-	friend Iterator<T> operator+(Iterator<T> a, const int &n);
 
-private:
+protected:
+	void setValue(T *value) { this->m_value = value; }
+	friend class Iterable<T>;
 	T *m_value;
 };
 
@@ -30,13 +31,16 @@ template <typename T>
 class Iterable
 {
 public:
-	Iterator<T> begin();
-	Iterator<T> end();
+	Iterable(Iterator<T> *begin, Iterator<T> *end) : m_begin(begin), m_end(end) {}
+	Iterator<T> *begin() { return m_begin; }
+	Iterator<T> *end() { return m_end; }
 	void forEach(void (*func)(T &));
 
-private:
-	Iterator<T> m_begin;
-	Iterator<T> m_end;
+protected:
+	Iterator<T> *m_begin;
+	Iterator<T> *m_end;
+	void setBeginValue(T *value) { m_begin->setValue(value); }
+	void setEndValue(T *value) { m_end->setValue(value); }
 };
 
 // Iterrator methods definitions
@@ -44,13 +48,13 @@ private:
 template <typename T>
 bool operator==(const Iterator<T> &a, const Iterator<T> &b)
 {
-	return a.m_value == b.m_value;
+	return a.value() == b.m_value();
 }
 
 template <typename T>
 bool operator!=(const Iterator<T> &a, const Iterator<T> &b)
 {
-	return !(a == other);
+	return !(a == b);
 }
 
 template <typename T>
